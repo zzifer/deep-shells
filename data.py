@@ -9,12 +9,15 @@ def input_to_batch(mat_dict):
     dict_out = dict()
 
     for attr in ["vert", "triv", "evecs", "evals", "SHOT"]:
+        # 如果mat_dict[attr][0]的数据类型是整数类型，将其转换为np.int32类型
+        # 否则，将mat_dict[attr][0]转换为np.float32类型
         if mat_dict[attr][0].dtype.kind in np.typecodes["AllInteger"]:
             dict_out[attr] = np.asarray(mat_dict[attr][0], dtype=np.int32)
         else:
             dict_out[attr] = np.asarray(mat_dict[attr][0], dtype=np.float32)
 
     for attr in ["A"]:
+        # 将mat_dict[attr][0]的对角线元素提取出来，并转换为np.float32类型
         dict_out[attr] = np.asarray(mat_dict[attr][0].diagonal(), dtype=np.float32)
 
     return dict_out
@@ -111,10 +114,14 @@ class ShapeDatasetCombineMulti(ShapeDatasetCombine):
 
 
 def get_faustremeshed_file(i):
+    # faustremeshed文件所在的文件夹路径
     folder_path = ""
     assert folder_path != "", "Specify the location of FAUST remeshed"
+    # 获取 folder_path 文件夹中所有的文件名，并将它们存储在列表 faust_files
     faust_files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
+    # 对获取的文件名进行排序
     faust_files.sort()
+    # 使用 os.path.join 函数，根据指定的索引 i 获取第 i 个文件名，并返回完整的文件路径
     return os.path.join(folder_path, faust_files[i])
 
 
@@ -137,7 +144,7 @@ class Scaperemeshed_train(ShapeDatasetCombine):
         print("loaded SCAPE_remeshed with " + str(self.num_pairs) + " pairs")
 
 
-
+# 这个类通过继承ShapeDatasetCombineMulti类来加载组合了FAUST数据集和Scape数据集中remeshed后的训练数据
 class FaustScapeRemeshedTrain(ShapeDatasetCombineMulti):
     def __init__(self):
         super().__init__([Faustremeshed_train(), Scaperemeshed_train()])
